@@ -68,7 +68,7 @@ function next_level(){
         help
         exit 1
     fi
-    if [[ $LOWLEVEL < `expr $1 - 2` ]]; then
+    if [[ `expr $LOWLEVEL + 2` < $1 ]]; then
 		echo "The title's level should not leapfrog."
         help
         exit 1
@@ -108,13 +108,13 @@ if [ ! -f $filename ]; then
 	exit 1
 fi
 fileREG='\.md$'
-if [[ $filename !=~ $fileREG ]]; then
+if [[ ! $filename =~ $fileREG ]]; then
     echo "$filename is not a markdown file."
 	help
 	exit 1
 fi
 newfilename=$filename.temp
-cat $filename | while read line ; do
+while read line ; do
     REG='^#+ .*'
     if [[ $line =~ $REG ]]; then
         level=${line%% *}
@@ -135,7 +135,8 @@ cat $filename | while read line ; do
     else
         echo $line >> $newfilename
     fi
-done
+done <<< "$(cat $filename)" 
+echo "finished"
 cat $newfilename > $filename
 rm -f $newfilename
 
